@@ -74,6 +74,28 @@ La misma sesión admite llamadas a `tools/list` y `tools/call` para `get_current
 - Flujo `initialize → tools/list → tools/call` validado desde internet.
 - Base lista para incorporar control de sesiones, migración de tools avanzadas e integración con agentes cognitivos.
 
+## Asignación de puertos (Pool EI-UNP IA)
+El ecosistema de IA de la UNP reserva de forma permanente el rango 14000–14019 para su arquitectura contenerizada, evitando colisiones con servicios adyacentes.
+
+| Categoría         | Puerto  | Componente                                                   |
+|-------------------|---------|--------------------------------------------------------------|
+| Agentes           | 14000   | Agent MASTER                                                 |
+|                   | 14001   | Agent AQUA                                                   |
+|                   | 14002   | Agent IGNIS                                                  |
+|                   | 14003   | Agent AERIS                                                  |
+|                   | 14004   | Agent TERRA                                                  |
+| Servicios Core    | 14005   | MCP Server (FastMCP, HTTP streamable / SSE)                  |
+| Bases de Datos    | 14010   | Knowledge DB (AQUA / Plan Democracia, pgvector)             |
+| (PostgreSQL)      | 14011   | Auth DB (Roles y Permisos)                                   |
+|                   | 14012   | Policy / Audit DB                                            |
+|                   | 14013   | Memory DB (Sesiones, mensajes, memoria persistente)          |
+| Reserva           | 14014–19| Crecimiento futuro (gateway, redis interno, UI, nuevos agentes) |
+
+Notas:
+- El pool dedicado garantiza que los contenedores de EI-UNP IA no entren en conflicto con otros servicios.
+- Las bases de datos permanecen privadas y solo pueden exponerse temporalmente durante validaciones controladas.
+- El MCP Server es el único endpoint previsto para exposición pública, siempre a través de un proxy seguro.
+
 ## Roadmap / Milestones
 **Milestone 1 – MCP Base (COMPLETADO)**
 - MCP HTTP streamable
