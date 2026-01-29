@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  knowledge-db:
+    image: pgvector/pgvector:pg16
+    container_name: knowledge-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: knowledge_db
+      POSTGRES_USER: knowledge_db_user
+      POSTGRES_PASSWORD: "kp&1V25Wg$"
+    ports:
+      - "14010:5432"   # Expuesto para desarrollo/debug. Cerrar en prod si se requiere.
+    volumes:
+      - knowledge_db_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U knowledge_db_user -d knowledge_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  knowledge_db_data:

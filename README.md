@@ -13,6 +13,8 @@ El servidor MCP del Ecosistema de Información UNP (EI-UNP) actúa como backend 
 - FastMCP y dependencias listadas en `mcp/server/requirements.txt`.
 - Nginx o proxy equivalente para exponer `/mcp` hacia internet (opcional en entornos cerrados, recomendado para producción).
 
+> Configuración: copiar `mcp/server/.env.example` a `mcp/server/.env`, ajustar credenciales y nunca versionar `.env`.
+
 ## Ejecución del servidor MCP
 1. Posicionarse en `mcp/server/`.
 2. Instalar dependencias si es necesario con `python -m pip install -r requirements.txt`.
@@ -74,6 +76,13 @@ La misma sesión admite llamadas a `tools/list` y `tools/call` para `get_current
 - Flujo `initialize → tools/list → tools/call` validado desde internet.
 - Base lista para incorporar control de sesiones, migración de tools avanzadas e integración con agentes cognitivos.
 
+## Milestone: Knowledge DB (Plan Democracia / AQUA)
+- Contenedor PostgreSQL con `pgvector` y `pg_trgm` desplegado usando los scripts `databases/knowledge-db/initdb/01_extensions.sql`, `02_schema.sql` y `03_data.sql`.
+- Seeds del Plan Democracia (AQUA) cargados automáticamente; la base queda disponible en `databases/knowledge-db/` con el puerto reservado `14010` del pool EI-UNP IA.
+- Verificación: `psql -h 127.0.0.1 -p 14010 -U knowledge_db_user -d knowledge_db -c "SELECT count(*) FROM public.eco_aqua_base_conocimiento;"` debería devolver el total de fragmentos registrados.
+- MCP Server sigue ejecutándose fuera de Docker (pendiente contenerizar cuando estabilice la integración con las bases).
+- Esta Knowledge DB compartida albergará schemas dedicados por agente (`aqua`, `terra`, `ignis`, `aeris`) y se complementará con las futuras Memory, Policy y Auth DB.
+
 ## Asignación de puertos (Pool EI-UNP IA)
 El ecosistema de IA de la UNP reserva de forma permanente el rango 14000–14019 para su arquitectura contenerizada, evitando colisiones con servicios adyacentes.
 
@@ -115,3 +124,8 @@ Notas:
 **Milestone 4 – Auditoría y persistencia**
 - Registro de llamadas
 - Base de datos de auditoría
+
+## Próximo paso
+- Conectar el MCP Server a la Knowledge DB mediante el cliente/driver correspondiente.
+- Preparar las tools del agente AQUA para operar sobre su schema dedicado (`aqua`).
+- Planificar la incorporación de Memory DB, Policy DB y Auth DB como servicios compartidos.
