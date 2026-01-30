@@ -1,6 +1,7 @@
 from typing import List
-from utils.db import db_engine
-# Importamos el ENGINE correctamente
+# Importamos desde core
+from core.db.knowledge import get_connection
+# Servicios de aqua (actualmente en utils)
 from utils.vectorizer import vectorizer_engine
 
 def logic_consultar_rag(consulta: str) -> str:
@@ -15,25 +16,26 @@ def logic_consultar_rag(consulta: str) -> str:
             return "[ERROR] El motor de vectorización falló."
 
         # 2. Conexión a BD
-        conn = db_engine.get_connection()
-        if not conn:
-            return "[ERROR] No hay conexión activa con la base de datos."
-
-        cur = conn.cursor()
-        
-        # 3. Consulta SQL (RAG)
-        sql = """
-            SELECT d.titulo, d.texto_completo, (v.embedding <=> %s::vector) as distancia
-            FROM eco_aqua_documento d
-            JOIN eco_aqua_documento_vector v ON d.id_documento = v.id_documento
-            ORDER BY distancia ASC
-            LIMIT 3;
-        """
-        
-        cur.execute(sql, (str(vector.tolist()),))
-        resultados = cur.fetchall()
-        cur.close()
-        conn.close()
+        conn = None
+        try:
+            conn = get_connection()
+            cur = conn.cursor()
+            
+            # 3. Consulta SQL (RAG)
+            sql = """
+                SELECT d.titulo, d.texto_completo, (v.embedding <=> %s::vector) as distancia
+                FROM eco_aqua_documento d
+                JOIN eco_aqua_documento_vector v ON d.id_documento = v.id_documento
+                ORDER BY distancia ASC
+                LIMIT 3;
+            """
+            
+            cur.execute(sql, (str(vector),))
+            resultados = cur.fetchall()
+            cur.close()
+        finally:
+            if conn:
+                conn.close()
         
         if not resultados: 
             return "[MEMORIA] No se encontraron antecedentes previos."

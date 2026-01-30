@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 def run_diagnostic():
-    print("🔍 INICIANDO DIAGNÓSTICO DE SISTEMA - AGENTE AQUA (MODO SEGURO)")
+    print("🔍 DIAGNÓSTICO DE SISTEMA - AGENTE AQUA (MODO CORE)")
     print("=" * 60)
     
     results = []
@@ -39,9 +39,13 @@ def run_diagnostic():
         load_dotenv(dotenv_path=env_path)
         print("✅ Archivo .env: ENCONTRADO")
         
-        # El usuario pidió GEMINI_API_KEY, pero en .env usamos GOOGLE_API_KEY (según config.py)
-        # Verificamos ambos por si acaso o el que realmente se usa.
-        needed_vars = ["DB_HOST", "DB_PORT", "GOOGLE_API_KEY", "GOOGLE_SEARCH_KEY"]
+        # Nuevas variables del core
+        needed_vars = [
+            "KNOWLEDGE_DB_HOST", "KNOWLEDGE_DB_PORT", "KNOWLEDGE_DB_NAME", 
+            "KNOWLEDGE_DB_USER", "KNOWLEDGE_DB_PASSWORD",
+            "GOOGLE_API_KEY", "GOOGLE_SEARCH_KEY", "GOOGLE_CX_ID",
+            "SCRAPER_SERVICE_URL"
+        ]
         missing_vars = []
         for var in needed_vars:
             if not os.getenv(var):
@@ -57,10 +61,18 @@ def run_diagnostic():
         print("❌ Archivo .env: NO ENCONTRADO")
         results.append("❌ Variables de Entorno (Sin .env)")
 
-    # 3. VERIFICAR IMPORTS (Lógica)
-    print("\n[3/5] Verificando Integridad de la Lógica (Imports)...")
+    # 3. VERIFICAR IMPORTS (Lógica Core)
+    print("\n[3/5] Verificando Integridad de la Lógica (Core & Tools)...")
     sys.path.insert(0, str(server_dir))
     
+    try:
+        from core.config import get_settings
+        from core.db.knowledge import get_connection
+        print("✅ core.config.get_settings: OK")
+        print("✅ core.db.knowledge.get_connection: OK")
+    except Exception as e:
+        print(f"❌ Error en Core: {e}")
+
     logic_checks = [
         ("investigar_objetivo", "logic_investigar_objetivo"),
         ("consultar_rag", "logic_consultar_rag"),
@@ -87,11 +99,13 @@ def run_diagnostic():
     else:
         results.append(f"❌ Integridad de Lógica ({logic_errors} errores)")
 
-    # 4. PRUEBA DE CONEXIÓN A BD (No Bloqueante)
-    print("\n[4/5] Probando Conexión a Base de Datos...")
+    # 4. PRUEBA DE CONEXIÓN A SERVICIOS (DB & Scraper)
+    print("\n[4/5] Probando Conexión a Servicios...")
+    
+    # A. Base de Datos
     try:
-        from utils.db import db_engine
-        conn = db_engine.get_connection()
+        from core.db.knowledge import get_connection
+        conn = get_connection()
         if conn:
             print("✅ CONEXIÓN BD: EXITOSA")
             conn.close()
@@ -102,6 +116,27 @@ def run_diagnostic():
     except Exception as e:
         print(f"🔴 BD Desconectada (Aviso): {e}")
         results.append("⚠️ BD Desconectada (Aviso)")
+
+    # B. Scraper Service (Ping)
+    import requests
+    scraper_url = os.getenv("SCRAPER_SERVICE_URL")
+    if scraper_url:
+        try:
+            # Quitamos '/extract' para probar el base path o simplemente hacemos un GET al URL configurado
+            # La mayoría de servicios uvicorn/fastapi responden en la raíz o podemos intentar el URL directo con un GET (aunque sea POST)
+            # Para mayor seguridad, intentamos un ping rápido al puerto/host
+            resp = requests.get(scraper_url.replace("/extract", "/"), timeout=3)
+            if resp.status_code < 500:
+                print("✅ SERVICIO SCRAPER: DISPONIBLE")
+                results.append("✅ Conexión Scraper Service")
+            else:
+                print(f"❌ SERVICIO SCRAPER: ERROR HTTP {resp.status_code}")
+                results.append("❌ Conexión Scraper Service (Error HTTP)")
+        except Exception as e:
+            print(f"❌ SERVICIO SCRAPER: NO DISPONIBLE -> {e}")
+            results.append("❌ Conexión Scraper Service (Offline)")
+    else:
+        results.append("⚠️ Scraper Service URL no configurada")
 
     # 5. RESUMEN FINAL
     print("\n" + "=" * 60)

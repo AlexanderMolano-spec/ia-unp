@@ -1,13 +1,13 @@
 import sys
 import requests
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
-# --- IMPORTACIONES DE TUS UTILIDADES ---
-from utils.config import Config
-from utils.db import db_engine
+# Importamos desde core
+from core.config import get_settings
+from core.db.knowledge import get_connection
 
-# Motores (Servicios)
-from utils.scraper import scraper_engine
+# Motores (Servicios de Aqua en utils)
+# Eliminamos scraper_engine local
 from utils.text_processor import processor_engine
 from utils.vectorizer import vectorizer_engine
 from utils.risk_engine import risk_engine
@@ -17,7 +17,8 @@ from utils.storage import storage_engine
 
 def _buscar_en_google(query: str, logs: List[str]) -> List[str]:
     """Ejecuta búsqueda en Google Custom Search API."""
-    if not Config.API_KEY_SEARCH or not Config.SEARCH_ENGINE_ID:
+    settings = get_settings()
+    if not settings.google_search_key or not settings.google_cx_id:
         logs.append("[CONFIG ERROR] Credenciales de Google Search no configuradas.")
         return []
     
@@ -26,8 +27,8 @@ def _buscar_en_google(query: str, logs: List[str]) -> List[str]:
     try:
         url_api = "https://www.googleapis.com/customsearch/v1"
         params = {
-            "key": Config.API_KEY_SEARCH, 
-            "cx": Config.SEARCH_ENGINE_ID, 
+            "key": settings.google_search_key, 
+            "cx": settings.google_cx_id, 
             "q": query, 
             "num": 5,
             "gl": "co"
@@ -46,28 +47,11 @@ def _buscar_en_google(query: str, logs: List[str]) -> List[str]:
         logs.append(f"[BUSQUEDA EXCEPCION] {str(e)}")
     return urls
 
-def _parsear_contenido(raw: str) -> Tuple[str, str]:
-    """Separa Título y Cuerpo."""
-    if not raw: return ("Sin Título", "")
-    marker = "CONTENIDO:\n"
-    if marker in raw:
-        try:
-            partes = raw.split("\n\n" + marker, 1)
-            titulo = partes[0].replace("TITULO: ", "").strip()
-            cuerpo = partes[1].strip()
-            return (titulo, cuerpo)
-        except: pass
-    return ("Titulo Automático", raw.strip())
-
 def _crear_auditoria(target: str, logs: List[str]) -> int:
     """Registra inicio en BD."""
-    conn = db_engine.get_connection()
-    if not conn:
-        logs.append("[DB ERROR] No hay conexión a BD para auditoría.")
-        return 0
-    
-    id_exec = 0
+    conn = None
     try:
+        conn = get_connection()
         cur = conn.cursor()
         sql = """
             INSERT INTO eco_aqua_ejecucionconsulta (consulta, fecha_inicio) 
@@ -78,17 +62,57 @@ def _crear_auditoria(target: str, logs: List[str]) -> int:
         id_exec = cur.fetchone()[0]
         conn.commit()
         cur.close()
-        conn.close()
         logs.append(f"[AUDITORIA] Registro creado ID: {id_exec}")
+        return id_exec
     except Exception as e:
         logs.append(f"[AUDITORIA ERROR] {e}")
-    return id_exec
+        return 0
+    finally:
+        if conn:
+            conn.close()
 
-# --- LÓGICA PRINCIPAL (Solo Investigación) ---
+def _llamar_servicio_scraper(urls: List[str], logs: List[str]) -> List[dict]:
+    """
+    Realiza la llamada al microservicio de Scraping (Docker).
+    """
+    settings = get_settings()
+    if not settings.scraper_service_url:
+        logs.append("[CONFIG ERROR] SCRAPER_SERVICE_URL no configurada.")
+        return []
+    
+    logs.append(f"[SCRAPER] Delegando {len(urls)} URLs al servicio dockerizado...")
+    
+    try:
+        payload = {
+            "urls": urls,
+            "lang": "es",
+            "concurrency": 6
+        }
+        # Timeout generoso para procesamiento de múltiples URLs
+        resp = requests.post(settings.scraper_service_url, json=payload, timeout=60)
+        
+        if resp.status_code == 200:
+            data = resp.json()
+            if data.get("ok"):
+                resultados = data.get("results", [])
+                logs.append(f"[SCRAPER] Servicio respondió con {len(resultados)} resultados.")
+                return resultados
+        
+        logs.append(f"[SCRAPER ERROR] Servicio retornó status {resp.status_code}")
+        return []
+        
+    except requests.exceptions.ConnectionError:
+        logs.append("⚠️ [SCRAPER ERROR] Error de conexión con el servicio de Scraping (¿Está el contenedor arriba?)")
+        return []
+    except Exception as e:
+        logs.append(f"[SCRAPER EXCEPCION] {str(e)}")
+        return []
+
+# --- LÓGICA PRINCIPAL ---
 
 def logic_investigar_objetivo(objetivo: str) -> str:
     """
-    Orquesta: Búsqueda -> Scraping -> Guardado -> Vectorización -> Riesgo.
+    Orquesta: Búsqueda -> Scraping (Docker) -> Guardado -> Vectorización -> Riesgo.
     """
     logs = []
     logs.append(f"[INFO] INICIO PROCESO: {objetivo.upper()}")
@@ -106,26 +130,35 @@ def logic_investigar_objetivo(objetivo: str) -> str:
         logs.append("[INFO] Sin resultados en búsqueda web.")
         return "\n".join(logs)
 
+    # 3. Llamada masiva al Scraper Service
+    resultados_scraper = _llamar_servicio_scraper(urls, logs)
+    
+    if not resultados_scraper:
+        logs.append("[INFO] No se obtuvo contenido del servicio de Scraping.")
+        return "\n".join(logs)
+
     stats = {"procesados": 0, "errores": 0, "vectores": 0}
     hallazgos_riesgo = []
 
-    # 3. Procesamiento
-    for i, url in enumerate(urls, 1):
-        logs.append(f"\n[FUENTE {i}/{len(urls)}] {url}")
+    # 4. Procesamiento de Resultados
+    for res in resultados_scraper:
+        url = res.get("url")
+        titulo = res.get("titulo", "Sin Título")
+        texto = res.get("texto", "")
+        error = res.get("error")
         
-        try:
-            # A. Scraping
-            raw = scraper_engine.procesar(url)
-            if not raw or raw.startswith("ERROR"):
-                logs.append(f"   [SCRAPER FALLO] No se pudo obtener contenido.")
-                stats["errores"] += 1
-                continue
+        logs.append(f"\n[ANALIZANDO] {url}")
+        
+        if error:
+            logs.append(f"   [ERROR FUENTE] {error}")
+            stats["errores"] += 1
+            continue
             
-            titulo, texto = _parsear_contenido(raw)
-            if len(texto) < 100:
-                logs.append("   [INFO] Contenido insuficiente (<100 chars).")
-                continue
+        if not texto or len(texto) < 100:
+            logs.append("   [INFO] Contenido insuficiente o vacío.")
+            continue
 
+        try:
             # B. Persistencia Documental
             id_doc = storage_engine.guardar_documento(id_ejecucion, titulo, url, texto)
             if not id_doc:

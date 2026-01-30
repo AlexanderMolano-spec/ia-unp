@@ -2,11 +2,14 @@ import os
 import sys
 import google.generativeai as genai
 from typing import List, Dict, Any
-from utils.config import Config
-from utils.db import db_engine
+
+# Importamos configuración y conexión desde core
+from core.config import get_settings
+from core.db.knowledge import get_connection
 
 # Configuración de Gemini
-genai.configure(api_key=Config.GEMINI_API_KEY)
+settings = get_settings()
+genai.configure(api_key=settings.google_api_key)
 
 def logic_reportar_objetivo(objetivo: str) -> str:
     """
@@ -14,56 +17,54 @@ def logic_reportar_objetivo(objetivo: str) -> str:
     """
     try:
         # 1. Obtención de datos de la base de datos
-        conn = db_engine.get_connection()
-        if not conn:
-            return "[ERROR] No hay conexión activa con la base de datos."
+        conn = None
+        try:
+            conn = get_connection()
+            cur = conn.cursor()
+            
+            # Consulta para extraer toda la información vinculada
+            sql = """
+                SELECT 
+                    o.nombre as objetivo,
+                    o.partido,
+                    c.consulta as termino_busqueda,
+                    c.fecha_inicio,
+                    d.titulo as documento_titulo,
+                    d.url as fuente_url,
+                    f.texto_fragmento
+                FROM eco_aqua_objetivo_busqueda o
+                LEFT JOIN eco_aqua_ejecucionconsulta c ON o.id_objetivo = c.id_objetivo
+                LEFT JOIN eco_aqua_documento d ON c.id_ejecucionconsulta = d.id_ejecucionconsulta
+                LEFT JOIN eco_aqua_fragmento f ON d.id_documento = f.id_documento
+                WHERE o.nombre ILIKE %s
+                ORDER BY c.fecha_inicio DESC, f.nro_secuencia ASC;
+            """
+            
+            cur.execute(sql, (f"%{objetivo}%",))
+            rows = cur.fetchall()
+            
+            if not rows:
+                cur.close()
+                return f"[INFO] No se encontró información previa para el objetivo '{objetivo}' en la base de datos."
 
-        cur = conn.cursor()
-        
-        # Consulta para extraer toda la información vinculada
-        sql = """
-            SELECT 
-                o.nombre as objetivo,
-                o.partido,
-                c.consulta as termino_busqueda,
-                c.fecha_inicio,
-                d.titulo as documento_titulo,
-                d.url as fuente_url,
-                f.texto_fragmento
-            FROM eco_aqua_objetivo_busqueda o
-            LEFT JOIN eco_aqua_ejecucionconsulta c ON o.id_objetivo = c.id_objetivo
-            LEFT JOIN eco_aqua_documento d ON c.id_ejecucionconsulta = d.id_ejecucionconsulta
-            LEFT JOIN eco_aqua_fragmento f ON d.id_documento = f.id_documento
-            WHERE o.nombre ILIKE %s
-            ORDER BY c.fecha_inicio DESC, f.nro_secuencia ASC;
-        """
-        
-        cur.execute(sql, (f"%{objetivo}%",))
-        rows = cur.fetchall()
-        
-        if not rows:
+            # Procesar datos crudos para el prompt
+            datos_crudos = []
+            info_basica = f"Objetivo: {rows[0][0]}"
+            if rows[0][1]: info_basica += f" | Partido/Afiliación: {rows[0][1]}"
+            
+            datos_crudos.append(info_basica)
+            datos_crudos.append("\n--- HALLAZGOS ---")
+            
+            for row in rows:
+                if row[6]:
+                    entry = f"- Fuente: {row[4]} ({row[5]})\n  Hallazgo: {row[6]}"
+                    datos_crudos.append(entry)
+
+            datos_crudos_text = "\n\n".join(datos_crudos)
             cur.close()
-            conn.close()
-            return f"[INFO] No se encontró información previa para el objetivo '{objetivo}' en la base de datos."
-
-        # Procesar datos crudos para el prompt
-        datos_crudos = []
-        info_basica = f"Objetivo: {rows[0][0]}"
-        if rows[0][1]: info_basica += f" | Partido/Afiliación: {rows[0][1]}"
-        
-        datos_crudos.append(info_basica)
-        datos_crudos.append("\n--- HALLAZGOS ---")
-        
-        for row in rows:
-            # Evitar fragmentos vacios si hay joins incompletos
-            if row[6]:
-                entry = f"- Fuente: {row[4]} ({row[5]})\n  Hallazgo: {row[6]}"
-                datos_crudos.append(entry)
-
-        datos_crudos_text = "\n\n".join(datos_crudos)
-        
-        cur.close()
-        conn.close()
+        finally:
+            if conn:
+                conn.close()
 
         # 2. Carga del Template de Prompt
         current_dir = os.path.dirname(os.path.abspath(__file__))
