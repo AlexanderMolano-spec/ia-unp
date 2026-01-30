@@ -1,6 +1,10 @@
 from fastmcp import FastMCP
 
+from core import config
 from servers.general import register as register_general
+
+# Validar configuración antes de exponer el servidor
+config.validate()
 
 # MCP principal del ecosistema IA-UNP
 mcp = FastMCP(
