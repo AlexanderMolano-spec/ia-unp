@@ -38,7 +38,10 @@ class Settings:
     google_search_key: Optional[str]
     google_cx_id: Optional[str]
     model_name: str
-    scraper_service_url: Optional[str]
+    model_name: str
+    scraper_service_enabled: bool
+    scraper_service_base_url: Optional[str]
+    scraper_service_timeout: int
 
 
 _settings: Optional[Settings] = None
@@ -88,7 +91,9 @@ def _build_settings() -> Settings:
         google_search_key=os.getenv("GOOGLE_SEARCH_KEY"),
         google_cx_id=os.getenv("GOOGLE_CX_ID"),
         model_name=os.getenv("MODEL_NAME", "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"),
-        scraper_service_url=os.getenv("SCRAPER_SERVICE_URL"),
+        scraper_service_enabled=os.getenv("SCRAPER_SERVICE_ENABLED", "false").lower() == "true",
+        scraper_service_base_url=os.getenv("SCRAPER_SERVICE_BASE_URL"),
+        scraper_service_timeout=int(os.getenv("SCRAPER_SERVICE_TIMEOUT", "30")),
     )
 
 

@@ -14,12 +14,32 @@ from core.db.knowledge import get_connection
 from utils.vectorizer import vectorizer_engine
 
 class RiskEngine:
-    """
-    Motor de Analisis de Riesgos (Cerebro Semantico).
+    """Motor de Analisis de Riesgos (Cerebro Semantico).
+
+    Esta clase orquesta la deteccion de riesgos semanticos comparando fragmentos
+    de texto con una base de conocimiento etiquetada mediante busqueda vectorial.
+
+    Attributes:
+        UMBRAL_ALERTA (float): Valor de distancia maxima para considerar un match positivo.
     """
     UMBRAL_ALERTA = 0.45 
 
     def analizar_fragmento(self, texto_fragmento: str) -> Dict[str, Any]:
+        """Analiza un fragmento de texto para detectar riesgos potenciales.
+
+        Genera un embedding del texto y busca el match mas cercano en la base
+        de conocimiento de riesgos.
+
+        Args:
+            texto_fragmento: El contenido textual a analizar.
+
+        Returns:
+            Dict[str, Any]: Un diccionario con:
+                - es_riesgo (bool): Si se detecto un riesgo por debajo del umbral.
+                - etiqueta (str): El nombre de la categoria de riesgo.
+                - confianza (float): Nivel de confianza del analisis (1.0 - distancia).
+                - evidencia (str): El texto de referencia que disparo la alerta.
+        """
         resultado = {
             "es_riesgo": False,
             "etiqueta": "Sin Riesgo",
@@ -37,8 +57,12 @@ class RiskEngine:
         conn = None
         try:
             conn = get_connection()
+            if not conn:
+                return resultado
+                
             cur = conn.cursor()
             
+            # Busqueda de similitud semantica en la base de conocimiento
             query = """
                 SELECT 
                     er.nombre as etiqueta,
@@ -55,6 +79,8 @@ class RiskEngine:
             
             if match:
                 etiqueta_detectada, evidencia_encontrada, distancia = match
+                # El "POR QUE" del umbral: Se calibro para minimizar falsos positivos 
+                # en documentos legales extensos.
                 if distancia < self.UMBRAL_ALERTA:
                     confianza = round(1.0 - float(distancia), 4)
                     etiquetas_ignorar = ["Sin Riesgo", "Ruido", "Salud", "General"]
@@ -67,12 +93,13 @@ class RiskEngine:
             
             cur.close()
         except Exception as e:
-            print(f"[ERROR] Excepcion en motor de riesgos: {e}", file=sys.stderr)
+            # Salida de error sobria hacia stderr
+            print(f"ERROR: Excepcion en motor de riesgos: {e}", file=sys.stderr)
         finally:
             if conn:
                 conn.close()
 
         return resultado
 
-# Instancia global exportada
+# Instancia global exportada para uso en el sistema
 risk_engine = RiskEngine()

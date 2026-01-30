@@ -3,26 +3,42 @@ import sys
 import google.generativeai as genai
 from typing import List, Dict, Any
 
-# Importamos configuración y conexión desde core
+# Importamos configuracion y conexion desde core
 from core.config import get_settings
 from core.db.knowledge import get_connection
 
-# Configuración de Gemini
+# Configuracion de Gemini
 settings = get_settings()
 genai.configure(api_key=settings.google_api_key)
 
 def logic_reportar_objetivo(objetivo: str) -> str:
-    """
-    Genera un informe detallado de un objetivo basado en la información de la base de datos.
+    """Genera un informe detallado de un objetivo basado en la informacion de la base de datos.
+
+    Extrae todos los hallazgos y metadatos asociados a un objetivo desde la
+    base de datos documental y utiliza Gemini para sintetizar un reporte narrativo
+    profesional.
+
+    Args:
+        objetivo: El nombre del objetivo para el cual se generara el informe.
+
+    Returns:
+        Un informe narrativo completo generado por la IA o un mensaje descriptivo
+        si no se encontraron datos.
+
+    Raises:
+        Exception: Si ocurre un error en la consulta a BD o en la generacion de contenido.
     """
     try:
-        # 1. Obtención de datos de la base de datos
+        # 1. Obtencion de datos de la base de datos
         conn = None
         try:
             conn = get_connection()
+            if not conn:
+                return "ERROR DB: No se pudo conectar a la base de datos para generar reporte."
+                
             cur = conn.cursor()
             
-            # Consulta para extraer toda la información vinculada
+            # Consulta para extraer toda la informacion vinculada
             sql = """
                 SELECT 
                     o.nombre as objetivo,
@@ -45,12 +61,12 @@ def logic_reportar_objetivo(objetivo: str) -> str:
             
             if not rows:
                 cur.close()
-                return f"[INFO] No se encontró información previa para el objetivo '{objetivo}' en la base de datos."
+                return f"INFO: No se encontro informacion previa para el objetivo '{objetivo}' en la base de datos."
 
             # Procesar datos crudos para el prompt
             datos_crudos = []
             info_basica = f"Objetivo: {rows[0][0]}"
-            if rows[0][1]: info_basica += f" | Partido/Afiliación: {rows[0][1]}"
+            if rows[0][1]: info_basica += f" | Partido/Afiliacion: {rows[0][1]}"
             
             datos_crudos.append(info_basica)
             datos_crudos.append("\n--- HALLAZGOS ---")
@@ -72,12 +88,12 @@ def logic_reportar_objetivo(objetivo: str) -> str:
         prompt_path = os.path.join(server_root, "prompts", "prompt_reporte_objetivo.md")
         
         if not os.path.exists(prompt_path):
-            return "[ERROR] No se encontró el recurso 'prompt_reporte_objetivo.md'."
+            return "ERROR: No se encontro el recurso 'prompt_reporte_objetivo.md'."
 
         with open(prompt_path, 'r', encoding='utf-8') as f:
             template = f.read()
 
-        # 3. Inyección de datos y llamado a Gemini
+        # 3. Inyeccion de datos y llamado a Gemini
         final_prompt = template.format(
             OBJETIVO=objetivo,
             DATOS_CRUDOS=datos_crudos_text
@@ -89,4 +105,4 @@ def logic_reportar_objetivo(objetivo: str) -> str:
         return response.text
 
     except Exception as e:
-        return f"[ERROR SISTEMA] Error al generar el informe: {str(e)}"
+        return f"ERROR SISTEMA: Error al generar el informe: {str(e)}"

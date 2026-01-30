@@ -8,15 +8,28 @@ from core.config import get_settings
 from core.db.knowledge import get_connection
 
 # ---------------------------------------------------------
-# CONFIGURACIÓN DEL MODELO GENERATIVO
+# CONFIGURACION DEL MODELO GENERATIVO
 # ---------------------------------------------------------
 # Se obtienen los settings centralizados
 settings = get_settings()
 genai.configure(api_key=settings.google_api_key)
 
 def logic_consultar_conocimiento(pregunta: str) -> str:
-    """
-    Motor de Análisis NL2SQL (Natural Language to SQL).
+    """Motor de Analisis NL2SQL (Natural Language to SQL).
+
+    Traduce preguntas de lenguaje natural a consultas SQL ejecutables sobre el
+    esquema de la base de datos de conocimiento de la UNP, utilizando el modelo
+    Gemini para la generacion del codigo.
+
+    Args:
+        pregunta: La consulta en lenguaje natural realizada por el usuario.
+
+    Returns:
+        Una cadena con los resultados de la consulta formateados en una tabla
+        o un mensaje de error descriptivo en caso de fallo.
+
+    Raises:
+        Exception: Si ocurre un error critico no manejado durante el proceso.
     """
     try:
         # 1. CARGA DE CONTEXTO (Diccionario de Datos)
@@ -25,12 +38,12 @@ def logic_consultar_conocimiento(pregunta: str) -> str:
         dict_path = os.path.join(server_root, "resources", "data_dictionary.md")
         
         if not os.path.exists(dict_path):
-            return "[ERROR CONFIG] No se encontró el archivo 'data_dictionary.md' en la carpeta resources."
+            return "ERROR CONFIG: No se encontro el archivo 'data_dictionary.md' en la carpeta resources."
 
         with open(dict_path, 'r', encoding='utf-8') as f:
             diccionario_contenido = f.read()
 
-        # 2. INGENIERÍA DE PROMPT (Generación de SQL)
+        # 2. INGENIERIA DE PROMPT (Generacion de SQL)
         prompt = f"""
 Eres un arquitecto de datos experto en PostgreSQL. Tu objetivo es traducir preguntas de lenguaje natural a código SQL ejecutable y optimizado.
 
@@ -47,19 +60,22 @@ PREGUNTA DEL USUARIO:
 
 SQL RESULTANTE:"""
 
-        # 3. INTERACCIÓN CON LLM (Gemini)
+        # 3. INTERACCION CON LLM (Gemini)
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
         
         sql_query = response.text.strip().replace('```sql', '').replace('```', '').strip()
 
         if not sql_query.lower().startswith("select"):
-             return f"[ADVERTENCIA] La consulta generada no parece ser de lectura. Por seguridad se canceló.\nSQL Generado: {sql_query}"
+             return f"WARNING: La consulta generada no parece ser de lectura. Por seguridad se cancelo.\nSQL Generado: {sql_query}"
 
-        # 4. EJECUCIÓN EN BASE DE DATOS
+        # 4. EJECUCION EN BASE DE DATOS
         conn = None
         try:
             conn = get_connection()
+            if not conn:
+                return "ERROR DB: No se pudo establecer conexion con la base de datos."
+                
             resultados = []
             colnames = []
 
@@ -72,14 +88,14 @@ SQL RESULTANTE:"""
             
             cur.close()
         except Exception as query_error:
-            return f"[ERROR SQL] Fallo en la ejecución de la consulta:\nDetalle: {query_error}\nQuery: {sql_query}"
+            return f"ERROR SQL: Fallo en la ejecucion de la consulta:\nDetalle: {query_error}\nQuery: {sql_query}"
         finally:
             if conn:
                 conn.close()
 
         # 5. FORMATEO DE RESPUESTA
         if not resultados:
-            return f"[INFO] La consulta se ejecutó correctamente pero no arrojó resultados.\nQuery: {sql_query}"
+            return f"INFO: La consulta se ejecuto correctamente pero no arrojo resultados.\nQuery: {sql_query}"
 
         header = " | ".join(colnames)
         separator = "-" * len(header)
@@ -101,4 +117,4 @@ SQL RESULTANTE:"""
         return "\n".join(res_text)
 
     except Exception as e:
-        return f"[ERROR SISTEMA] Excepción crítica en el módulo de análisis SQL: {str(e)}"
+        return f"ERROR SISTEMA: Excepcion critica en el modulo de analisis SQL: {str(e)}"
