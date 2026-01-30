@@ -83,6 +83,12 @@ La misma sesión admite llamadas a `tools/list` y `tools/call` para `get_current
 - MCP Server sigue ejecutándose fuera de Docker (pendiente contenerizar cuando estabilice la integración con las bases).
 - Esta Knowledge DB compartida albergará schemas dedicados por agente (`aqua`, `terra`, `ignis`, `aeris`) y se complementará con las futuras Memory, Policy y Auth DB.
 
+## Milestone: Memory DB (Sesiones y Mensajes)
+- Base PostgreSQL compartida por todos los agentes para persistir usuarios, sesiones y mensajes del ecosistema.
+- Ubicada en `databases/memory-db/` con los scripts `initdb/01_extensions.sql` (uuid-ossp) y `02_schema.sql` (tablas + índice) ejecutados automáticamente al levantar el contenedor.
+- Puerto asignado dentro del pool EI-UNP IA: `14013`.
+- La capa avanzada de persistencia e inteligencia sobre esta memoria se añadirá cuando las tools y agentes estén integrados.
+
 ## Asignación de puertos (Pool EI-UNP IA)
 El ecosistema de IA de la UNP reserva de forma permanente el rango 14000–14019 para su arquitectura contenerizada, evitando colisiones con servicios adyacentes.
 

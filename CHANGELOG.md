@@ -11,3 +11,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Tools generales (`ping`, `get_current_date`) disponibles para validación.
 - Flujo `initialize → tools/list → tools/call` verificado vía HTTP externo.
 - Knowledge DB contenerizada con scripts `initdb` y seeds del Plan Democracia (AQUA).
+- Memory DB contenerizada con tablas de usuarios, sesiones y mensajes.
