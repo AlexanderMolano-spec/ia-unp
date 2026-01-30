@@ -1,11 +1,16 @@
 from fastmcp import FastMCP
 import sys
 
-# 1. IMPORTAR REGISTRADORES GENERALES
+# 1. CONFIGURACIÓN Y SERVIDORES GENERALES
 try:
+    from core import config
     from servers.general import register as register_general
-except ImportError:
-    def register_general(m): pass
+    
+    # Validar configuración antes de exponer el servidor
+    config.validate()
+except ImportError as e:
+    print(f"[FATAL] Error cargando 'core' o 'servers': {e}", file=sys.stderr)
+    sys.exit(1)
 
 # 2. IMPORTAR LÓGICA DE AQUA 
 try:
@@ -20,6 +25,7 @@ except ImportError as e:
     sys.exit(1)
 
 # --- SERVIDOR ---
+# MCP principal del ecosistema IA-UNP
 mcp = FastMCP(
     name="IA-UNP MCP Server",
 )
@@ -57,4 +63,5 @@ def ping() -> str:
     return "pong - IA-UNP Online"
 
 if __name__ == "__main__":
+    # Correr servidor MCP (Transporte HTTP por defecto en main)
     mcp.run(transport="http", host="0.0.0.0", port=8000, path="/mcp")

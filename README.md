@@ -89,6 +89,13 @@ La misma sesión admite llamadas a `tools/list` y `tools/call` para `get_current
 - Puerto asignado dentro del pool EI-UNP IA: `14013`.
 - La capa avanzada de persistencia e inteligencia sobre esta memoria se añadirá cuando las tools y agentes estén integrados.
 
+## Servicios auxiliares (Infraestructura)
+- **Scraper Service (Web Extraction)**: Microservicio FastAPI/newspaper3k que encapsula la descarga y normalización de contenidos web. Corre contenerizado de forma independiente, escucha en el puerto interno `5001` y se publica a la red EI-UNP en `14014`. expone `POST /extract`, diseñado para ser consumido por tools del MCP (por ejemplo, herramientas del agente AQUA) y nunca de forma directa por los agentes. El MCP controla el acceso al scraper mediante sus propias tools, asegurando que los agentes solo utilicen el servicio bajo las políticas vigentes.
+
+Notas de arquitectura:
+- El Scraper es un recurso de infraestructura, no un agente cognitivo.
+- Los agentes (AQUA, TERRA, etc.) acceden a su funcionalidad exclusivamente mediante tools del MCP.
+
 ## Asignación de puertos (Pool EI-UNP IA)
 El ecosistema de IA de la UNP reserva de forma permanente el rango 14000–14019 para su arquitectura contenerizada, evitando colisiones con servicios adyacentes.
 

@@ -1,9 +1,8 @@
 import sys
 import os
-import psycopg2
+import psycopg
 
 # --- AJUSTE DINAMICO DE IMPORTACIONES ---
-# Asegura que se pueda importar Config desde el directorio local
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.append(current_dir)
@@ -15,7 +14,7 @@ except ImportError:
 
 class DatabaseHandler:
     """
-    Gestor Central de Conexiones a PostgreSQL.
+    Gestor Central de Conexiones a PostgreSQL usando psycopg v3.
     Patron Singleton para eficiencia de recursos.
     """
     
@@ -29,12 +28,13 @@ class DatabaseHandler:
 
     def get_connection(self):
         """
-        Retorna una nueva conexion a la base de datos.
+        Retorna una nueva conexion a la base de datos (psycopg v3).
         """
         try:
-            conn = psycopg2.connect(
+            # Psycopg 3 usa los mismos parámetros pero es más eficiente
+            conn = psycopg.connect(
                 host=Config.DB_HOST,
-                database=Config.DB_NAME,
+                dbname=Config.DB_NAME, # En psycopg3 es dbname o database
                 user=Config.DB_USER,
                 password=Config.DB_PASS,
                 port=Config.DB_PORT
