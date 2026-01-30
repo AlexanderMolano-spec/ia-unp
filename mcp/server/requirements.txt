@@ -1,4 +1,10 @@
 fastmcp
+psycopg2-binary
+requests
+beautifulsoup4
 python-dotenv
+numpy
 pydantic
-psycopg[binary]
+spacy
+sentence-transformers
+playwright #Added to support PDF processing
