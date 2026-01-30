@@ -33,6 +33,15 @@ class Settings:
     knowledge_db: DatabaseConfig
     auth_db: DatabaseConfig
     policy_db: DatabaseConfig
+    # AI/Search Settings
+    google_api_key: Optional[str]
+    google_search_key: Optional[str]
+    google_cx_id: Optional[str]
+    model_name: str
+    model_name: str
+    scraper_service_enabled: bool
+    scraper_service_base_url: Optional[str]
+    scraper_service_timeout: int
 
 
 _settings: Optional[Settings] = None
@@ -78,6 +87,13 @@ def _build_settings() -> Settings:
         knowledge_db=_build_db_config("KNOWLEDGE_DB", include_schema=True),
         auth_db=_build_db_config("AUTH_DB"),
         policy_db=_build_db_config("POLICY_DB"),
+        google_api_key=os.getenv("GOOGLE_API_KEY"),
+        google_search_key=os.getenv("GOOGLE_SEARCH_KEY"),
+        google_cx_id=os.getenv("GOOGLE_CX_ID"),
+        model_name=os.getenv("MODEL_NAME", "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"),
+        scraper_service_enabled=os.getenv("SCRAPER_SERVICE_ENABLED", "false").lower() == "true",
+        scraper_service_base_url=os.getenv("SCRAPER_SERVICE_BASE_URL"),
+        scraper_service_timeout=int(os.getenv("SCRAPER_SERVICE_TIMEOUT", "30")),
     )
 
 

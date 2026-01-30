@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  scraper:
+    container_name: ei-unp-scraper
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "14014:5001"
