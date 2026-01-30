@@ -3,13 +3,14 @@ import sys
 import google.generativeai as genai
 from typing import List, Dict, Any
 
-# Importamos configuracion y conexion desde core
+# Importamos configuracion y conexion
 from core.config import get_settings
+from utils.config import get_app_settings
 from core.db.knowledge import get_connection
 
 # Configuracion de Gemini
-settings = get_settings()
-genai.configure(api_key=settings.google_api_key)
+app_settings = get_app_settings()
+genai.configure(api_key=app_settings.google_api_key)
 
 def logic_reportar_objetivo(objetivo: str) -> str:
     """Genera un informe detallado de un objetivo basado en la informacion de la base de datos.

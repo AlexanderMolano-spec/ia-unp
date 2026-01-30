@@ -5,14 +5,15 @@ from typing import List, Dict, Any
 
 # Importamos la nueva configuración y el conector de la base de datos desde core
 from core.config import get_settings
+from utils.config import get_app_settings
 from core.db.knowledge import get_connection
 
 # ---------------------------------------------------------
 # CONFIGURACION DEL MODELO GENERATIVO
 # ---------------------------------------------------------
-# Se obtienen los settings centralizados
-settings = get_settings()
-genai.configure(api_key=settings.google_api_key)
+# Se obtienen los settings centralizados (AppConfig para IA)
+app_settings = get_app_settings()
+genai.configure(api_key=app_settings.google_api_key)
 
 def logic_consultar_conocimiento(pregunta: str) -> str:
     """Motor de Analisis NL2SQL (Natural Language to SQL).

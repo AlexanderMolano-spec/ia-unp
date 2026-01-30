@@ -4,14 +4,15 @@ import json
 import google.generativeai as genai
 from typing import List, Dict, Any
 
-# Importamos desde core
+# Importamos desde core y utils
 from core.config import get_settings
+from utils.config import get_app_settings
 from core.db.knowledge import get_connection
 from utils.vectorizer import vectorizer_engine
 
 # Configuracion de Gemini desde settings centralizados
-settings = get_settings()
-genai.configure(api_key=settings.google_api_key)
+app_settings = get_app_settings()
+genai.configure(api_key=app_settings.google_api_key)
 
 def logic_evaluar_hechos(objetivo: str) -> str:
     """Realiza una auditoria forense sobre los hechos victimizantes detectados para un objetivo.

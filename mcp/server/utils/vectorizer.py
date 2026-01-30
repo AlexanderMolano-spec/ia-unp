@@ -11,8 +11,8 @@ server_root = os.path.dirname(current_dir)
 if server_root not in sys.path:
     sys.path.append(server_root)
 
-# Importamos la configuracion desde core
-from core.config import get_settings
+# Importamos la configuracion desde utils ahora
+from utils.config import get_app_settings
 
 class Vectorizer:
     """Motor de Vectorizacion Semantica Local.
@@ -27,7 +27,7 @@ class Vectorizer:
 
     def __init__(self):
         """Inicializa el vectorizador cargando el modelo configurado."""
-        settings = get_settings()
+        settings = get_app_settings()
         self.model_name = settings.model_name
         self.model = None
         self._cargar_modelo()

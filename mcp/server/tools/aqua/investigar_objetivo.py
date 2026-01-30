@@ -3,8 +3,9 @@ import requests
 from typing import List, Tuple, Optional
 from urllib.parse import urljoin
 
-# Importamos desde core
+# Importamos desde core y utils
 from core.config import get_settings
+from utils.config import get_app_settings
 from core.db.knowledge import get_connection
 
 # Motores (Servicios de Aqua en utils)
@@ -25,8 +26,8 @@ def _buscar_en_google(query: str, logs: List[str]) -> List[str]:
     Returns:
         Lista de URLs encontradas.
     """
-    settings = get_settings()
-    if not settings.google_search_key or not settings.google_cx_id:
+    app_settings = get_app_settings()
+    if not app_settings.google_search_key or not app_settings.google_cx_id:
         logs.append("ERROR CONFIG: Credenciales de Google Search no configuradas.")
         return []
     
@@ -35,8 +36,8 @@ def _buscar_en_google(query: str, logs: List[str]) -> List[str]:
     try:
         url_api = "https://www.googleapis.com/customsearch/v1"
         params = {
-            "key": settings.google_search_key, 
-            "cx": settings.google_cx_id, 
+            "key": app_settings.google_search_key, 
+            "cx": app_settings.google_cx_id, 
             "q": query, 
             "num": 5,
             "gl": "co"
@@ -100,18 +101,18 @@ def _llamar_servicio_scraper(urls: List[str], logs: List[str]) -> List[dict]:
     Returns:
         Lista de diccionarios con los resultados del scraping (titulo, texto, url, error).
     """
-    settings = get_settings()
+    app_settings = get_app_settings()
     
-    if not settings.scraper_service_enabled:
+    if not app_settings.scraper_service_enabled:
         logs.append("INFO: El servicio de Scraping esta deshabilitado en la configuracion.")
         return []
 
-    if not settings.scraper_service_base_url:
+    if not app_settings.scraper_service_base_url:
         logs.append("ERROR CONFIG: SCRAPER_SERVICE_BASE_URL no configurada.")
         return []
     
     # Construcción dinámica de la URL
-    endpoint = urljoin(settings.scraper_service_base_url, "/extract")
+    endpoint = urljoin(app_settings.scraper_service_base_url, "/extract")
     logs.append(f"INFO: [NETWORK] Delegando {len(urls)} URLs al servicio en {endpoint}...")
     
     try:
@@ -122,7 +123,7 @@ def _llamar_servicio_scraper(urls: List[str], logs: List[str]) -> List[dict]:
         }
         
         # Uso del timeout configurado
-        timeout = settings.scraper_service_timeout
+        timeout = app_settings.scraper_service_timeout
         resp = requests.post(endpoint, json=payload, timeout=timeout)
         
         if resp.status_code == 200:
