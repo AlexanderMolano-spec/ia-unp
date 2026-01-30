@@ -1,0 +1,48 @@
+services:
+  # 1. Knowledge DB (PostgreSQL + pgvector)
+  knowledge-db:
+    image: pgvector/pgvector:pg16 # Fixed: Using correct tag for PG 16
+    container_name: ei-unp-knowledge-db
+    ports:
+      - "14010:5432"
+    environment:
+      POSTGRES_DB: knowledge_db
+      POSTGRES_USER: knowledge_db_user
+      POSTGRES_PASSWORD: knowledge_db_pass
+    volumes:
+      - ./databases/knowledge-db/initdb:/docker-entrypoint-initdb.d
+    networks:
+      - ei-unp-network
+    restart: unless-stopped
+
+  # 2. Memory DB (PostgreSQL)
+  memory-db:
+    image: postgres:16
+    container_name: ei-unp-memory-db
+    ports:
+      - "14013:5432"
+    environment:
+      POSTGRES_DB: memory_db
+      POSTGRES_USER: memory_db_user
+      POSTGRES_PASSWORD: memory_db_pass
+    volumes:
+      - ./databases/memory-db/initdb:/docker-entrypoint-initdb.d
+    networks:
+      - ei-unp-network
+    restart: unless-stopped
+
+  # 3. Scraper Service (Microservicio)
+  scraper-service:
+    build:
+      context: ./infra/docker/scraper
+      dockerfile: Dockerfile
+    container_name: ei-unp-scraper
+    ports:
+      - "14014:5001"
+    networks:
+      - ei-unp-network
+    restart: unless-stopped
+
+networks:
+  ei-unp-network:
+    driver: bridge
