@@ -90,7 +90,7 @@ La misma sesión admite llamadas a `tools/list` y `tools/call` para `get_current
 - La capa avanzada de persistencia e inteligencia sobre esta memoria se añadirá cuando las tools y agentes estén integrados.
 
 ## Servicios auxiliares (Infraestructura)
-- **Scraper Service (Web Extraction)**: Microservicio FastAPI/newspaper3k que encapsula la descarga y normalización de contenidos web. Corre contenerizado de forma independiente, escucha en el puerto interno `5001` y se publica a la red EI-UNP en `14014`. expone `POST /extract`, diseñado para ser consumido por tools del MCP (por ejemplo, herramientas del agente AQUA) y nunca de forma directa por los agentes. El MCP controla el acceso al scraper mediante sus propias tools, asegurando que los agentes solo utilicen el servicio bajo las políticas vigentes.
+- **Scraper Service (Web Extraction)**: Microservicio FastAPI/newspaper3k que encapsula la descarga y normalización de contenidos web. Corre contenerizado de forma independiente, escucha en el puerto interno `5001` y se publica a la red EI-UNP en `14014` (mapeo host `14014` ↔ contenedor `5001`). expone `POST /extract`, diseñado para ser consumido por tools del MCP (por ejemplo, herramientas del agente AQUA) y nunca de forma directa por los agentes. El MCP controla el acceso al scraper mediante sus propias tools, asegurando que los agentes solo utilicen el servicio bajo las políticas vigentes.
 
 Notas de arquitectura:
 - El Scraper es un recurso de infraestructura, no un agente cognitivo.
@@ -102,7 +102,7 @@ El ecosistema de IA de la UNP reserva de forma permanente el rango 14000–14019
 | Categoría         | Puerto  | Componente                                                   |
 |-------------------|---------|--------------------------------------------------------------|
 | Agentes           | 14000   | Agent MASTER                                                 |
-|                   | 14001   | Agent AQUA                                                   |
+|                   | 14001   | Agent AQUA / plan_democracia API (FastAPI + Gemini)          |
 |                   | 14002   | Agent IGNIS                                                  |
 |                   | 14003   | Agent AERIS                                                  |
 |                   | 14004   | Agent TERRA                                                  |
@@ -111,7 +111,8 @@ El ecosistema de IA de la UNP reserva de forma permanente el rango 14000–14019
 | (PostgreSQL)      | 14011   | Auth DB (Roles y Permisos)                                   |
 |                   | 14012   | Policy / Audit DB                                            |
 |                   | 14013   | Memory DB (Sesiones, mensajes, memoria persistente)          |
-| Reserva           | 14014–19| Crecimiento futuro (gateway, redis interno, UI, nuevos agentes) |
+| Infra auxiliar    | 14014   | Scraper Service (host 14014 ↔ contenedor 5001)               |
+| Reserva           | 14015–19| Crecimiento futuro (gateway, redis interno, UI, nuevos agentes) |
 
 Notas:
 - El pool dedicado garantiza que los contenedores de EI-UNP IA no entren en conflicto con otros servicios.
