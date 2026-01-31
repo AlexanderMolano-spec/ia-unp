@@ -16,6 +16,9 @@ import { Bot, SendHorizonal, Loader2, BarChart3, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoUnidad from "@/assets/logo_unidad_gris.svg";
 import "./App.css";
+import { Input } from "./components/ui/input";
+import { useApiKeyStore } from "@/stores/api-key-store";
+import { useAuthStore } from "./stores";
 
 const INITIAL_MESSAGES: Message[] = [
   {
@@ -42,6 +45,10 @@ function App() {
   const [showInsightsPanel, setShowInsightsPanel] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { apiKey, setApiKey } = useApiKeyStore();
+  const { getUserId, getUserIdentity, getUserArea, getServicios } =
+    useAuthStore();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -82,8 +89,28 @@ function App() {
     setShowInsightsPanel(false);
     setActiveInsights({ sources: [] });
 
-    // Simular respuesta del bot con fuentes y chart (aquí conectarás tu backend/API)
-    setTimeout(() => {
+    // Preparar payload con datos del usuario
+    const payload = {
+      message: trimmedInput,
+      user: {
+        ...getUserIdentity(),
+        ...getUserArea(),
+        id_busuario: getUserId(),
+        servicios: getServicios(),
+      },
+      input_mode: "text",
+    };
+
+    // Debug: imprimir payload antes de enviar
+    console.log("[handleSubmit] Payload a enviar:", payload);
+
+    try {
+      // Descomentar cuando tengas el endpoint listo:
+      // const response = await apiService.post("/chat", payload);
+      // console.log("[handleSubmit] Respuesta:", response.data);
+
+      // Por ahora simular respuesta
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       // Ejemplo de respuesta con fuentes y datos estadísticos
       const mockSources: Source[] = [
         {
@@ -136,7 +163,6 @@ function App() {
         chart: mockChart,
       };
       setMessages((prev) => [...prev, assistantMessage]);
-      setIsLoading(false);
 
       // Mostrar automáticamente el panel si hay insights
       setActiveInsights({
@@ -144,7 +170,19 @@ function App() {
         chart: mockChart,
       });
       setShowInsightsPanel(true);
-    }, 1500);
+    } catch (error) {
+      console.error("[handleSubmit] Error:", error);
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        content:
+          "Lo siento, ocurrió un error al procesar tu mensaje. Por favor intenta de nuevo.",
+        role: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -170,6 +208,15 @@ function App() {
             </p>
           </div>
         </div>
+        {import.meta.env.DEV && (
+          <div>
+            <Input
+              placeholder="Ingresa tu API Key de Gemini"
+              value={apiKey || ""}
+              onChange={(e) => setApiKey(e.target.value)}
+            />
+          </div>
+        )}
         {insightsCount > 0 && (
           <Button
             variant="outline"
@@ -203,7 +250,10 @@ function App() {
       <div className="flex flex-1 overflow-hidden">
         {/* Chat Area */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          <ScrollArea className="flex-1 overflow-hidden" viewportRef={scrollRef}>
+          <ScrollArea
+            className="flex-1 overflow-hidden"
+            viewportRef={scrollRef}
+          >
             <div className="mx-auto max-w-3xl">
               {messages.map((message) => (
                 <div key={message.id}>

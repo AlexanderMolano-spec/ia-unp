@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: frontend-plandemocracia
     build:
       context: .
       dockerfile: Dockerfile
