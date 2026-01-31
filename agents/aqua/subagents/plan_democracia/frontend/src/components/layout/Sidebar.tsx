@@ -44,23 +44,23 @@ export function Sidebar({
       {/* Sidebar Panel */}
       <aside
         className={cn(
-          "absolute left-0 top-0 h-full w-[280px] bg-background border-r transition-transform duration-300 flex flex-col",
+          "absolute left-0 top-0 h-full w-[85vw] max-w-[320px] sm:w-[280px] bg-background border-r transition-transform duration-300 flex flex-col shadow-xl",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="font-semibold">Historial</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-4 w-4" />
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b">
+          <h2 className="font-semibold text-base sm:text-lg">Historial</h2>
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-9 w-9">
+            <X className="h-5 w-5" />
           </Button>
         </div>
 
         {/* New Chat Button */}
-        <div className="p-3">
+        <div className="p-2 sm:p-3">
           <Button
             onClick={handleNewChat}
-            className="w-full gap-2"
+            className="w-full gap-2 h-11 sm:h-10"
             variant="outline"
           >
             <Plus className="h-4 w-4" />
@@ -69,17 +69,17 @@ export function Sidebar({
         </div>
 
         {/* Chat History */}
-        <ScrollArea className="flex-1 px-3">
+        <ScrollArea className="flex-1 px-2 sm:px-3">
           <div className="space-y-1 pb-4">
             {chatHistory.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
+              <p className="text-sm text-muted-foreground text-center py-8">
                 No hay conversaciones
               </p>
             ) : (
               chatHistory.map((chat) => (
                 <button
                   key={chat.id}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-left transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-3 sm:py-2.5 rounded-lg hover:bg-muted active:bg-muted/80 text-left transition-colors"
                   onClick={() => handleSelectChat(chat.id)}
                 >
                   <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0" />

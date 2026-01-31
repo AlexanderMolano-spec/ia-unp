@@ -29,29 +29,29 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t bg-background p-4">
-      <form onSubmit={handleSubmit} className="mx-auto flex max-w-3xl gap-3">
+    <div className="border-t bg-background p-2 sm:p-4">
+      <form onSubmit={handleSubmit} className="mx-auto flex max-w-3xl gap-2 sm:gap-3">
         <Textarea
           ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Escribe tu mensaje..."
-          className="min-h-[52px] max-h-[200px] resize-none"
+          className="min-h-[44px] sm:min-h-[52px] max-h-[120px] sm:max-h-[200px] resize-none text-sm sm:text-base"
           rows={1}
           disabled={isLoading}
         />
         <Button
           type="submit"
           size="icon"
-          className="h-[52px] w-[52px] shrink-0"
+          className="h-[44px] w-[44px] sm:h-[52px] sm:w-[52px] shrink-0"
           disabled={!input.trim() || isLoading}
         >
-          <SendHorizonal className="h-5 w-5" />
+          <SendHorizonal className="h-4 w-4 sm:h-5 sm:w-5" />
           <span className="sr-only">Enviar mensaje</span>
         </Button>
       </form>
-      <p className="mx-auto mt-2 max-w-3xl text-center text-xs text-muted-foreground">
+      <p className="mx-auto mt-1.5 sm:mt-2 max-w-3xl text-center text-[10px] sm:text-xs text-muted-foreground hidden sm:block">
         Presiona Enter para enviar, Shift+Enter para nueva línea
       </p>
     </div>
