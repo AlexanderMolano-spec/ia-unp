@@ -1,8 +1,9 @@
-"""Application configuration helpers for DB connectivity."""
+"""Centralized configuration for the MCP server."""
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
@@ -10,16 +11,36 @@ from dotenv import load_dotenv
 
 _BASE_DIR = Path(__file__).resolve().parent.parent
 _ENV_PATH = _BASE_DIR / ".env"
-# Load environment variables from .env when present
 load_dotenv(dotenv_path=_ENV_PATH, override=False)
 
 
 class ConfigurationError(RuntimeError):
-    """Raised when required configuration values are missing."""
+    """Raised when required configuration values are missing or invalid."""
+
+
+def _require(name: str) -> str:
+    value = os.getenv(name)
+    if value is None or value.strip() == "":
+        raise ConfigurationError(f"Missing environment variable: {name}")
+    return value
+
+
+def _require_int(name: str) -> int:
+    raw = _require(name)
+    try:
+        return int(raw)
+    except ValueError as exc:
+        raise ConfigurationError(f"Invalid integer for {name}: {raw}") from exc
+
+
+def _to_bool(value: Optional[str], *, default: bool = False) -> bool:
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 @dataclass(frozen=True)
-class DatabaseConfig:
+class DatabaseSettings:
     host: str
     port: int
     name: str
@@ -29,41 +50,44 @@ class DatabaseConfig:
 
 
 @dataclass(frozen=True)
-class Settings:
-    knowledge_db: DatabaseConfig
-    auth_db: DatabaseConfig
-    policy_db: DatabaseConfig
+class ScraperSettings:
+    enabled: bool
+    host: str
+    port: int
+    base_url: str
+    timeout: int
 
 
-_settings: Optional[Settings] = None
+@dataclass(frozen=True)
+class GoogleSearchSettings:
+    search_key: str
+    cx_id: str
+    api_key: str
 
 
-def _require(env_var: str) -> str:
-    value = os.getenv(env_var)
-    if not value:
-        raise ConfigurationError(f"Missing environment variable: {env_var}")
-    return value
+@dataclass(frozen=True)
+class EmbeddingSettings:
+    model_name: str
 
 
-def _build_db_config(prefix: str, *, include_schema: bool = False) -> DatabaseConfig:
+@dataclass(frozen=True)
+class MCPSettings:
+    knowledge_db: DatabaseSettings
+    auth_db: DatabaseSettings
+    policy_db: DatabaseSettings
+    scraper: ScraperSettings
+    google_search: GoogleSearchSettings
+    embedding: EmbeddingSettings
+
+
+def _build_db_settings(prefix: str, *, include_schema: bool = False) -> DatabaseSettings:
     host = _require(f"{prefix}_HOST")
-    port_raw = _require(f"{prefix}_PORT")
+    port = _require_int(f"{prefix}_PORT")
     name = _require(f"{prefix}_NAME")
     user = _require(f"{prefix}_USER")
     password = _require(f"{prefix}_PASSWORD")
-
-    schema = None
-    if include_schema:
-        schema = os.getenv(f"{prefix}_SCHEMA")
-
-    try:
-        port = int(port_raw)
-    except ValueError as exc:
-        raise ConfigurationError(
-            f"Invalid integer for {prefix}_PORT: {port_raw}"
-        ) from exc
-
-    return DatabaseConfig(
+    schema = os.getenv(f"{prefix}_SCHEMA") if include_schema else None
+    return DatabaseSettings(
         host=host,
         port=port,
         name=name,
@@ -73,24 +97,64 @@ def _build_db_config(prefix: str, *, include_schema: bool = False) -> DatabaseCo
     )
 
 
-def _build_settings() -> Settings:
-    return Settings(
-        knowledge_db=_build_db_config("KNOWLEDGE_DB", include_schema=True),
-        auth_db=_build_db_config("AUTH_DB"),
-        policy_db=_build_db_config("POLICY_DB"),
+def _build_scraper_settings() -> ScraperSettings:
+    enabled = _to_bool(os.getenv("SCRAPER_SERVICE_ENABLED"), default=False)
+    host = os.getenv("SCRAPER_SERVICE_HOST", "")
+    port_str = os.getenv("SCRAPER_SERVICE_PORT")
+    base_url = os.getenv("SCRAPER_SERVICE_BASE_URL", "")
+    timeout_str = os.getenv("SCRAPER_SERVICE_TIMEOUT")
+
+    port = int(port_str) if port_str else 0
+    timeout = int(timeout_str) if timeout_str else 0
+
+    if enabled:
+        if not host or not port:
+            raise ConfigurationError(
+                "SCRAPER_SERVICE_HOST/PORT required when scraper enabled"
+            )
+        if not base_url:
+            raise ConfigurationError(
+                "SCRAPER_SERVICE_BASE_URL required when scraper enabled"
+            )
+        if timeout <= 0:
+            timeout = 30
+
+    return ScraperSettings(
+        enabled=enabled,
+        host=host or "",
+        port=port,
+        base_url=base_url or "",
+        timeout=timeout or 0,
     )
 
 
-def get_settings() -> Settings:
-    """Return cached settings, building them if necessary."""
+def _build_google_settings() -> GoogleSearchSettings:
+    return GoogleSearchSettings(
+        search_key=os.getenv("GOOGLE_SEARCH_KEY", ""),
+        cx_id=os.getenv("GOOGLE_CX_ID", ""),
+        api_key=os.getenv("GOOGLE_API_KEY", ""),
+    )
 
-    global _settings
-    if _settings is None:
-        _settings = _build_settings()
-    return _settings
+
+def _build_embedding_settings() -> EmbeddingSettings:
+    return EmbeddingSettings(
+        model_name=os.getenv("EMBEDDING_MODEL_NAME", "text-embedding-3-large"),
+    )
 
 
-def validate() -> Settings:
+@lru_cache(maxsize=1)
+def get_settings() -> MCPSettings:
+    return MCPSettings(
+        knowledge_db=_build_db_settings("KNOWLEDGE_DB", include_schema=True),
+        auth_db=_build_db_settings("AUTH_DB"),
+        policy_db=_build_db_settings("POLICY_DB"),
+        scraper=_build_scraper_settings(),
+        google_search=_build_google_settings(),
+        embedding=_build_embedding_settings(),
+    )
+
+
+def validate() -> MCPSettings:
     """Validate and return the loaded settings."""
 
     return get_settings()
@@ -98,8 +162,11 @@ def validate() -> Settings:
 
 __all__ = [
     "ConfigurationError",
-    "DatabaseConfig",
-    "Settings",
+    "DatabaseSettings",
+    "ScraperSettings",
+    "GoogleSearchSettings",
+    "EmbeddingSettings",
+    "MCPSettings",
     "get_settings",
     "validate",
 ]
