@@ -6,8 +6,8 @@ from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
 
-from .config import get_settings
-from .gemini_client import GeminiError, generate_answer
+from agents.shared.llm.config import get_settings
+from agents.shared.llm.gemini_client import GeminiError, generate_answer
 from .schemas import ChatRequest, ChatResponse, HealthResponse
 
 settings = get_settings()

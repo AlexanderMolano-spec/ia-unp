@@ -1,4 +1,4 @@
-"""Configuration loader for the AQUA/Plan Democracia subagent."""
+"""Shared configuration loader for LLM integrations."""
 from __future__ import annotations
 
 import os
@@ -19,7 +19,6 @@ def _load_env_file() -> None:
         if env_path.exists():
             load_dotenv(dotenv_path=env_path, override=False)
             return
-    # Fallback to default behaviour (search current working directory)
     load_dotenv(override=False)
 
 
