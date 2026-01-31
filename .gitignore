@@ -22,3 +22,10 @@ build/
 .DS_Store
 .vscode/
 .idea/
+
+# Test files
+mcp/server/manual_test_person.py
+mcp/server/test_client.py
+
+# Web spider results
+mcp/server/web_spider_results_*.json
