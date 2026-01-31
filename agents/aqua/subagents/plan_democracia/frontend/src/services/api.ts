@@ -1,12 +1,7 @@
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { getApiKey } from "@/stores";
-import {
-  getSessionId,
-  getUserId,
-  getUserIdentity,
-  getUserArea,
-} from "@/stores";
+import { getApiKey, getChatSessionId, setChatSessionId } from "@/stores";
+import { getUserId, getUserIdentity, getUserArea } from "@/stores";
 
 // Crear instancia de axios
 const api = axios.create({
@@ -28,10 +23,10 @@ api.interceptors.request.use(
       }
     }
 
-    // Agregar datos de sesión
-    const sessionId = getSessionId();
-    if (sessionId) {
-      config.headers["X-Session-Id"] = sessionId;
+    // Agregar session de chat (se obtiene del response del primer mensaje)
+    const chatSessionId = getChatSessionId();
+    if (chatSessionId) {
+      config.headers["X-Session-Id"] = chatSessionId;
     }
 
     // Agregar ID de usuario
@@ -65,9 +60,19 @@ api.interceptors.request.use(
 // Interceptor de response
 api.interceptors.response.use(
   (response) => {
+    // Capturar session_id del response headers
+    const sessionId = response.headers["x-session-id"];
+    if (sessionId) {
+      setChatSessionId(sessionId);
+      if (import.meta.env.DEV) {
+        console.log("[API] Session ID guardado:", sessionId);
+      }
+    }
+
     if (import.meta.env.DEV) {
       console.log("[API Response]", {
         status: response.status,
+        headers: response.headers,
         data: response.data,
       });
     }
