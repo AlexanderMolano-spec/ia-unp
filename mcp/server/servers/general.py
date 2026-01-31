@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from fastmcp import FastMCP
 
-from utils.general.send_report_email import send_report_email
+from utils.general.send_email_report import send_report_email
 from utils.general.create_pdf import create_pdf
 from utils.general.web_spider import web_filter
 

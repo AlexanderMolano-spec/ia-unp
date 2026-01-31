@@ -1,5 +1,5 @@
 """
-Tool: send_email_report
+Tool: send_report_email
 Descripcion: Envio de correo electronico con opcion de adjuntar PDF
 
 NOTA: Este archivo es solo una referencia/documentacion.
