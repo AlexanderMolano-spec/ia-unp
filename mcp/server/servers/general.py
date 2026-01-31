@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from fastmcp import FastMCP
 
-from utils.general.send_email_report import send_report_email
+from utils.general.send_report_email import send_report_email
 from utils.general.create_pdf import create_pdf
 from utils.general.web_spider import web_filter
 
@@ -17,8 +17,8 @@ def register(mcp: FastMCP) -> None:
 
         return datetime.now(timezone.utc).date().isoformat()
 
-    @mcp.tool(name="send_email_report", tags=["GENERAL"])
-    def send_email_report_tool(
+    @mcp.tool(name="send_report_email", tags=["GENERAL"])
+    def send_report_email_tool(
         email: str,
         subject: str,
         message: str,

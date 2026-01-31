@@ -18,7 +18,7 @@ def _guess_smtp_server(email_user: str) -> str:
     return os.getenv("SMTP_SERVER", "smtp.gmail.com")
 
 
-def utils_send_report_email(
+def send_report_email(
     email: str,
     subject: str,
     message: str,
@@ -42,7 +42,8 @@ def utils_send_report_email(
         msg.attach(MIMEText(message, "plain", "utf-8"))
 
         if content_pdf:
-            pdf_result = utils_create_pdf(content_pdf, name_pdf)  # asume dict
+            from utils.general.create_pdf import create_pdf
+            pdf_result = create_pdf(content_pdf, name_pdf)
             if not pdf_result.get("success"):
                 return {
                     "success": False,
@@ -51,7 +52,7 @@ def utils_send_report_email(
 
             pdf_b64 = pdf_result.get("pdf_base64")
             if not pdf_b64:
-                return {"success": False, "error": "utils_create_pdf no devolvió pdf_base64."}
+                return {"success": False, "error": "create_pdf no devolvio pdf_base64."}
 
             pdf_bytes = base64.b64decode(pdf_b64)
             part = MIMEApplication(pdf_bytes, Name=name_pdf)

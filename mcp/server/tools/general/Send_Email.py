@@ -4,11 +4,11 @@ Descripcion: Envio de correo electronico con opcion de adjuntar PDF
 
 NOTA: Este archivo es solo una referencia/documentacion.
 La herramienta esta registrada en: servers/general.py
-La implementacion esta en: utils/general/send_email_report.py
+La implementacion esta en: utils/general/send_report_email.py
 """
 
 # Definicion de la herramienta (referencia)
-# Nombre: send_email_report
+# Nombre: send_report_email
 # Tags: ["GENERAL"]
 #
 # Argumentos:
