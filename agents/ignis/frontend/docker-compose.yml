@@ -1,0 +1,13 @@
+services:
+  frontend:
+    container_name: frontend-ignis
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_WS_URL: ws://host.docker.internal:8082/ws
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

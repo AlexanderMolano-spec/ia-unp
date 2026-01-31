@@ -1,0 +1,31 @@
+/* Reset para que el layout ocupe toda la pantalla */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fix para el z-index del mapa Leaflet */
+.leaflet-container {
+  z-index: 1;
+}
+
+/* Scrollbar personalizada para el chat */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+}
