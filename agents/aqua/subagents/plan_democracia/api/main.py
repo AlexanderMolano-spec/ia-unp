@@ -4,11 +4,17 @@ from __future__ import annotations
 import asyncio
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Response
+from fastapi.responses import JSONResponse
 
 from agents.shared.llm.config import get_settings
 from agents.shared.llm.gemini_client import GeminiError, generate_answer
-from .schemas import ChatRequest, ChatResponse, HealthResponse
+from .schemas import (
+    AttachmentPayload,
+    ChatRequest,
+    ChatResponse,
+    HealthResponse,
+)
 
 settings = get_settings()
 app = FastAPI(title="AQUA – Plan Democracia", version="0.1.0")
@@ -20,16 +26,32 @@ async def health() -> HealthResponse:
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(payload: ChatRequest) -> ChatResponse:
+async def chat(
+    payload: ChatRequest,
+    response: Response,
+    x_user_id: str = Header(..., alias="X-User-Id"),
+    x_session_id: str | None = Header(None, alias="X-Session-Id"),
+    gemini_api_key_header: str | None = Header(None, alias="GEMINI_API_KEY"),
+) -> ChatResponse:
     message = (payload.message or "").strip()
     if not message:
         raise HTTPException(status_code=400, detail="'message' es obligatorio")
 
-    session_id = payload.session_id or str(uuid4())
+    input_mode = (payload.input_mode or "text").strip().lower()
+    if input_mode not in {"text", "voice"}:
+        raise HTTPException(status_code=400, detail="'input_mode' inválido")
+
+    session_id = x_session_id or str(uuid4())
 
     api_key = settings.gemini_api_key
-    if settings.debug and payload.gemini_api_key:
-        api_key = payload.gemini_api_key
+    if settings.debug:
+        if gemini_api_key_header:
+            api_key = gemini_api_key_header
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="GEMINI_API_KEY requerido en modo DEBUG",
+            )
 
     if not api_key:
         raise HTTPException(status_code=500, detail="Gemini API key no configurada")
@@ -44,7 +66,14 @@ async def chat(payload: ChatRequest) -> ChatResponse:
     except GeminiError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
-    return ChatResponse(session_id=session_id, answer=answer)
+    response.headers["X-Session-Id"] = session_id
+
+    attachment = AttachmentPayload(chartData={}, snippets={})
+    return ChatResponse(
+        outMode=input_mode,
+        text=answer,
+        attachment=attachment,
+    )
 
 
 # Nota: ejecutar con
