@@ -22,8 +22,11 @@ class AppConfig:
     google_cx_id: Optional[str]
     model_name: str
     scraper_service_enabled: bool
+    scraper_service_host: Optional[str]
+    scraper_service_port: Optional[int]
     scraper_service_base_url: Optional[str]
     scraper_service_timeout: int
+    embedding_model_name: str
 
 _app_settings: Optional[AppConfig] = None
 
@@ -56,8 +59,11 @@ def _build_app_settings() -> AppConfig:
         google_cx_id=os.getenv("GOOGLE_CX_ID"),
         model_name=os.getenv("MODEL_NAME", "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"),
         scraper_service_enabled=os.getenv("SCRAPER_SERVICE_ENABLED", "false").lower() == "true",
+        scraper_service_host=os.getenv("SCRAPER_SERVICE_HOST"),
+        scraper_service_port=int(os.getenv("SCRAPER_SERVICE_PORT", "0")) if os.getenv("SCRAPER_SERVICE_PORT") else None,
         scraper_service_base_url=os.getenv("SCRAPER_SERVICE_BASE_URL"),
         scraper_service_timeout=int(os.getenv("SCRAPER_SERVICE_TIMEOUT", "30")),
+        embedding_model_name=os.getenv("EMBEDDING_MODEL_NAME", os.getenv("MODEL_NAME", "sentence-transformers/paraphrase-multilingual-mpnet-base-v2")),
     )
 
 def get_app_settings() -> AppConfig:
