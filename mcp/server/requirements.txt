@@ -7,5 +7,6 @@ numpy
 pydantic
 spacy
 sentence-transformers
-playwright #Added to support PDF processing
+playwright
+python-dateutil
 google-generativeai

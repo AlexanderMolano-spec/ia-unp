@@ -1,0 +1,481 @@
+{
+  "success": true,
+  "keywords_used": [
+    "abelardo de la espriella"
+  ],
+  "date_range": {
+    "from": "2025-08-03",
+    "to": "2026-01-30",
+    "months_back": 6
+  },
+  "source_pages": {
+    "https://www.semana.com/": {
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "keyword_matches": {},
+      "keywords_found": [],
+      "has_match": false,
+      "total_links_found": 338,
+      "links_with_keywords": 1,
+      "links_analyzed": 25
+    }
+  },
+  "analyzed_links": [
+    {
+      "url": "https://www.semana.com/semana-tv/semana-el-debate/articulo/pronostican-que-abelardo-de-la-espriella-ganara-en-primera-vuelta-estoy-convencida/202603",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Pronostican que Abelardo de la Espriella ganará en primera vuelta: “Estoy convencida”\nOpens in new window",
+      "keywords_in_link": [
+        "abelardo de la espriella"
+      ],
+      "title": "Pronostican que Abelardo de la Espriella ganará en primera vuelta: “Estoy convencida”",
+      "description": "En las últimas horas, el Movimiento Creemos oficializó su apoyo al abogado.",
+      "author": "Semana",
+      "published_date": "2026-01-29T19:04:41.886Z",
+      "h1": [],
+      "keywords_found": [
+        "abelardo de la espriella"
+      ],
+      "keyword_matches": {
+        "abelardo de la espriella": {
+          "locations": [
+            "titulo",
+            "parrafos_articulo"
+          ],
+          "snippets": [
+            {
+              "location": "titulo",
+              "text": "Pronostican que Abelardo de la Espriella ganará en primera vuelta: “Estoy convencida”"
+            },
+            {
+              "location": "parrafo",
+              "text": "...en un evento en la Plaza Botero de Medellín, se oficializó el apoyo del Movimiento Creemos al candidato presidencial Abelardo de la Espriella."
+            },
+            {
+              "location": "parrafo",
+              "text": "...Senado y hermana del alcalde de Medellín Federico Gutiérrez, explicó por qué Creemos apoya la campaña presidencial de Abelardo de la Espriella y advirtió que él ganará en la primera vuelta de las elecciones presidenciales."
+            },
+            {
+              "location": "parrafo",
+              "text": "...construcción, por supuesto desde lo programático con la visión que tiene Creemos de país, y con la visión que tiene Abelardo de la Espriella. Pero aquí lo más importante es llevar el país por buen camino y que no vuelva a caer en las garras de la corrupción,..."
+            },
+            {
+              "location": "parrafo",
+              "text": "...Y nosotros también vamos a ser una fuerza importante para poder llegar al Congreso de la República y apoyar a Abelardo de la Espriella para la Presidencia”."
+            }
+          ]
+        }
+      },
+      "has_match": true
+    },
+    {
+      "url": "https://www.semana.com/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/login-revista-semana/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/politica/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Política",
+      "keywords_in_link": [],
+      "title": "Noticias de política de Colombia y el mundo - Semana",
+      "description": "Entérese de los movimientos y noticias sobre política que están marcando la agenda en Colombia y el mundo. Noticias, reportajes y análisis en un solo lugar con Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/nacion/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Nación",
+      "keywords_in_link": [],
+      "title": "Noticias de Colombia hoy e información de última hora - Semana",
+      "description": "Encuentre acá las noticias más importantes de Colombia, acontecimientos más relevantes. Análisis, reportajes y noticias en tiempo real en la sección nación de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/economia/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Dinero",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/confidenciales/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Confidenciales",
+      "keywords_in_link": [],
+      "title": "Confidenciales: información exclusiva y análisis - Semana",
+      "description": "Acceda a datos exclusivos, investigaciones y análisis sobre los temas más relevantes de Colombia y el mundo en la sección confidenciales de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/opinion/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Opinión",
+      "keywords_in_link": [],
+      "title": "Noticias de Opinión: columnistas, blogs y editoriales - Semana",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [
+        "OPINIÓN"
+      ],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/impresa/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Impresa",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [
+        "Edición Impresa"
+      ],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/especiales/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Especiales",
+      "keywords_in_link": [],
+      "title": "Especiales Semana: Reportajes y análisis en profundidad - Semana",
+      "description": "Explore nuestros especiales con contenido exclusivo, reportajes y análisis sobre temas de alto impacto en Colombia y el mundo.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/noticias/elecciones-presidenciales-2026-en-colombia/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Elecciones 2026",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [
+        "ELECCIONES PRESIDENCIALES 2026 EN COLOMBIA"
+      ],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/foros-semana/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Foros Semana",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [
+        "La nueva agenda de Washington en América Latina: ¿qué cambia y qué puede hacer la región? Tema central del Gran Foro Colombia 2026"
+      ],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/mejor-colombia/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Mejor Colombia",
+      "keywords_in_link": [],
+      "title": "Mejor Colombia: Historias de progreso y transformación - Semana",
+      "description": "Descubra proyectos, iniciativas y casos de éxito que están construyendo un mejor futuro para Colombia en la sección mejor Colombia de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/noticias/mundial-2026/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Mundial 2026",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [
+        "MUNDIAL 2026"
+      ],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/deportes/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Deportes",
+      "keywords_in_link": [],
+      "title": "Noticias deportivas de hoy en Colombia y el mundo - Semana",
+      "description": "Siga los momentos más emocionantes del deporte nacional e internacional. Noticias deportivas, análisis y más en la sección deportes de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/mundo/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Mundo",
+      "keywords_in_link": [],
+      "title": "Noticias del mundo: información internacional - Semana",
+      "description": "Infórmese sobre los acontecimientos y noticias internacionales más relevantes del momento. Noticias, análisis y perspectivas en la sección mundo de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/tv/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Semana TV",
+      "keywords_in_link": [],
+      "title": "Semana TV",
+      "description": "La senadora María Fernanda Cabal habla tras ser derrotada en el proceso interno del Centro Democrático para elegir candidato presidencial. Aclara si se queda en el partido y cuál será su futuro político.  #SemanaNoticias",
+      "author": "Semana",
+      "published_date": "2025-12-16T23:03:38.107Z",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/mundo/noticias-estados-unidos/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Estados Unidos",
+      "keywords_in_link": [],
+      "title": "Estados Unidos",
+      "description": "Estados Unidos",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/gente/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Jet Set",
+      "keywords_in_link": [],
+      "title": "Gente: historias y personajes destacados - Semana",
+      "description": "Conozca las historias más fascinantes de personajes nacionales e internacionales en la sección Gente de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/cultura/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Arcadia",
+      "keywords_in_link": [],
+      "title": "Cultura: noticias y tendencias artísticas - Semana",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/tecnologia/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Tecnología",
+      "keywords_in_link": [],
+      "title": "Noticias de tecnología: innovación y tendencias digitales - Semana",
+      "description": "Explora las últimas novedades en tecnología, innovación y tendencias digitales en Colombia y el mundo. Todo en la sección tecnología de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/turismo/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Turismo",
+      "keywords_in_link": [],
+      "title": "Turismo: noticias, destinos y consejos para viajar - Semana",
+      "description": "Explora destinos increíbles y consejos prácticos para tus viajes. Todo sobre turismo en Colombia y el mundo en Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/vehiculos/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Vehículos",
+      "keywords_in_link": [],
+      "title": "Vehículos: noticias y tendencias del sector automotriz - Semana",
+      "description": "Conozca lo último en el mundo automotriz: novedades, noticias, lanzamientos y consejos para conductores en la sección vehículos de Semana.",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/finanzas/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Finanzas Personales",
+      "keywords_in_link": [],
+      "title": "Noticias de Finanzas, consejos financieros y rentabilidad - Semana",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    },
+    {
+      "url": "https://www.semana.com/sostenible/",
+      "source_url": "https://www.semana.com/",
+      "link_text": "Sostenible",
+      "keywords_in_link": [],
+      "title": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "description": "Semana.com - Últimas Noticias de Colombia y el Mundo",
+      "author": "Semana",
+      "published_date": "",
+      "h1": [],
+      "keywords_found": [],
+      "keyword_matches": {},
+      "has_match": false
+    }
+  ],
+  "matching_urls": [
+    {
+      "url": "https://www.semana.com/semana-tv/semana-el-debate/articulo/pronostican-que-abelardo-de-la-espriella-ganara-en-primera-vuelta-estoy-convencida/202603",
+      "title": "Pronostican que Abelardo de la Espriella ganará en primera vuelta: “Estoy convencida”",
+      "description": "En las últimas horas, el Movimiento Creemos oficializó su apoyo al abogado.",
+      "author": "Semana",
+      "published_date": "2026-01-29T19:04:41.886Z",
+      "keywords_in_link": [
+        "abelardo de la espriella"
+      ],
+      "keywords_found": [
+        "abelardo de la espriella"
+      ],
+      "matches_detail": {
+        "abelardo de la espriella": {
+          "locations": [
+            "titulo",
+            "parrafos_articulo"
+          ],
+          "snippets": [
+            {
+              "location": "titulo",
+              "text": "Pronostican que Abelardo de la Espriella ganará en primera vuelta: “Estoy convencida”"
+            },
+            {
+              "location": "parrafo",
+              "text": "...en un evento en la Plaza Botero de Medellín, se oficializó el apoyo del Movimiento Creemos al candidato presidencial Abelardo de la Espriella."
+            },
+            {
+              "location": "parrafo",
+              "text": "...Senado y hermana del alcalde de Medellín Federico Gutiérrez, explicó por qué Creemos apoya la campaña presidencial de Abelardo de la Espriella y advirtió que él ganará en la primera vuelta de las elecciones presidenciales."
+            },
+            {
+              "location": "parrafo",
+              "text": "...construcción, por supuesto desde lo programático con la visión que tiene Creemos de país, y con la visión que tiene Abelardo de la Espriella. Pero aquí lo más importante es llevar el país por buen camino y que no vuelva a caer en las garras de la corrupción,..."
+            },
+            {
+              "location": "parrafo",
+              "text": "...Y nosotros también vamos a ser una fuerza importante para poder llegar al Congreso de la República y apoyar a Abelardo de la Espriella para la Presidencia”."
+            }
+          ]
+        }
+      },
+      "source": "https://www.semana.com/"
+    }
+  ],
+  "filtered_by_date": [],
+  "summary": {
+    "keywords_searched": [
+      "abelardo de la espriella"
+    ],
+    "date_from": "2025-08-03",
+    "date_to": "2026-01-30",
+    "total_source_pages": 1,
+    "total_links_analyzed": 25,
+    "links_with_keywords_visited": 1,
+    "total_matching_urls": 1,
+    "urls_filtered_by_date": 0,
+    "deep_search_enabled": true,
+    "max_links_per_page": 25
+  }
+}

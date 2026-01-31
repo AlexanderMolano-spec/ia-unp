@@ -24,6 +24,16 @@ except ImportError as e:
     print(f"[FATAL] Error crítico importando lógica de Aqua: {e}", file=sys.stderr)
     sys.exit(1)
 
+# 3. IMPORTAR LÓGICA GENERAL
+try:
+    from tools.general.send_email import logic_send_email_report
+    from tools.general.create_pdf import logic_create_pdf
+    from tools.general.web_spider import logic_web_spider
+    
+except ImportError as e:
+    print(f"[FATAL] Error crítico importando lógica General: {e}", file=sys.stderr)
+    sys.exit(1)
+
 # --- SERVIDOR ---
 # MCP principal del ecosistema IA-UNP
 mcp = FastMCP(
@@ -57,6 +67,37 @@ def reportar_objetivo(objetivo: str) -> str:
 def evaluar_hechos_victimizantes(objetivo: str) -> str:
     """[AQUA - FORENSE] Realiza una auditoría forense sobre los riesgos detectados, verificando denuncias formales, evidencia física y corroboración en múltiples fuentes."""
     return logic_evaluar_hechos(objetivo)
+
+# --- GENERAL TOOLS ---
+
+@mcp.tool(name="send_email_report")
+async def send_email_report(
+    email: str,
+    subject: str,
+    message: str,
+    content_pdf: str = None,
+    name_pdf: str = "reporte.pdf"
+) -> dict:
+    """[GENERAL] Envia un correo electronico con opcion de adjuntar un PDF generado desde HTML."""
+    return await logic_send_email_report(email, subject, message, content_pdf, name_pdf)
+
+@mcp.tool(name="create_pdf")
+async def create_pdf(html: str, filename: str = "reporte.pdf") -> dict:
+    """[GENERAL] Crea un PDF a partir de HTML y retorna los datos para descarga."""
+    return await logic_create_pdf(html, filename)
+
+@mcp.tool(name="web_spider")
+async def web_spider(
+    urls: list[str],
+    keywords: list[str],
+    deep_search: bool = True,
+    max_links_per_page: int = None,
+    date_from: str = None,
+    date_to: str = None,
+    months_back: int = 6
+) -> dict:
+    """[GENERAL] Busqueda en prensa: visita URLs, extrae enlaces, y busca palabras clave. Filtra por rango de fechas (default: ultimos 6 meses)."""
+    return await logic_web_spider(urls, keywords, deep_search, max_links_per_page, date_from, date_to, months_back)
 
 @mcp.tool()
 def ping() -> str:

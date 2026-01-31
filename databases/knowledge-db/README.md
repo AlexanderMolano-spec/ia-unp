@@ -12,6 +12,12 @@ docker run --name knowledge-db \
   -v $(pwd)/databases/knowledge-db/initdb:/docker-entrypoint-initdb.d \
   postgres:16
 ```
+´´´
+For windows:
+docker run --name knowledge-db -e POSTGRES_DB=mcp-unp-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 14010:5432 -v "C:/Users/Acer/Documents/UNP/MCP/MCP_Server/ia-unp/databases/knowledge-db/initdb:/docker-entrypoint-initdb.d" postgres:16
+
+docker run --name knowledge-db -e POSTGRES_DB=mcp-unp-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 14010:5432 -v "C:/Users/Acer/Documents/UNP/MCP/MCP_Server/ia-unp/databases/knowledge-db/initdb:/docker-entrypoint-initdb.d" pgvector/pgvector:pg16
+´´´
 
 ## Scripts entregados
 1. `01_extensions.sql` instala `vector` y `pg_trgm` antes de crear tablas o índices que dependan de ellas.
