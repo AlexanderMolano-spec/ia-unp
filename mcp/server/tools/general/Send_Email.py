@@ -1,5 +1,5 @@
 """
-Tool: send_email_report
+Tool: send_report_email
 Descripcion: Envio de correo electronico con opcion de adjuntar PDF
 
 Registro MCP: main.py

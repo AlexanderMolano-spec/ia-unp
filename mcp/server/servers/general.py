@@ -1,7 +1,6 @@
 """General-domain tools for the IA-UNP MCP server."""
 
 from datetime import datetime, timezone
-
 from fastmcp import FastMCP
 
 

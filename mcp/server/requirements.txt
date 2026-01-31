@@ -5,6 +5,7 @@ beautifulsoup4
 python-dotenv
 numpy
 pydantic
+google-generativeai
 spacy
 sentence-transformers
 playwright
