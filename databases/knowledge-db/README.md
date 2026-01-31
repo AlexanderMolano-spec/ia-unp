@@ -14,9 +14,7 @@ docker run --name knowledge-db \
 ```
 ´´´
 For windows:
-docker run --name knowledge-db -e POSTGRES_DB=mcp-unp-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 14010:5432 -v "C:/Users/Acer/Documents/UNP/MCP/MCP_Server/ia-unp/databases/knowledge-db/initdb:/docker-entrypoint-initdb.d" postgres:16
-
-docker run --name knowledge-db -e POSTGRES_DB=mcp-unp-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 14010:5432 -v "C:/Users/Acer/Documents/UNP/MCP/MCP_Server/ia-unp/databases/knowledge-db/initdb:/docker-entrypoint-initdb.d" pgvector/pgvector:pg16
+docker run --name knowledge-db -e POSTGRES_DB=knowledge_db -e POSTGRES_USER=knowledge_db_user -e POSTGRES_PASSWORD="kp&1V25Wg$" -p 14010:5432 -v "C:/Users/Acer/Documents/UNP/MCP/MCP_Server/ia-unp/databases/knowledge-db/initdb:/docker-entrypoint-initdb.d" pgvector/pgvector:pg16
 ´´´
 
 ## Scripts entregados
